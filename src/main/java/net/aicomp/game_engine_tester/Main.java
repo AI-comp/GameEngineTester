@@ -25,6 +25,7 @@ public class Main {
 	private static final String UNPAUSE_COMMAND = "u";
 	private static final String LOG_FILE_NAME = "log.txt";
 	private static final String JAR_FILE_NAME = "GameEngineTester.jar";
+	private static File logFile;
 
 	public static void main(String[] args) throws ParseException, IOException {
 		Options options = new Options().addOption(GAME_COMMAND, true, "the command to execute a game engine")
@@ -41,13 +42,14 @@ public class Main {
 	}
 
 	private static boolean start(CommandLine cl) throws IOException {
-		File logFile = new File(LOG_FILE_NAME);
+		logFile = new File(LOG_FILE_NAME);
 		if (cl.hasOption(GAME_COMMAND)) {
 			if (!cl.hasOption(NUM_AI)) {
 				return false;
 			}
 			int aiCount = Integer.parseInt(cl.getOptionValue(NUM_AI));
-			ArrayList<String> commandAndArgs = Lists.newArrayList(cl.getOptionValue(GAME_COMMAND).split(" "));
+			String gameCommand = cl.getOptionValue(GAME_COMMAND);
+			ArrayList<String> commandAndArgs = Lists.newArrayList(gameCommand.split(" "));
 			commandAndArgs.add("-a");
 			commandAndArgs.add("java -jar " + JAR_FILE_NAME + " -t");
 			commandAndArgs.add("-p");
@@ -65,32 +67,53 @@ public class Main {
 			if (logFile.exists()) {
 				logFile.delete();
 			}
-			Files.append("start\n", logFile, Charset.defaultCharset());
+			writeLog("Starting '" + gameCommand + "'");
 			ProcessBuilder pb = new ProcessBuilder(commandAndArgs);
 			pb.start();
+			writeLog("Started '" + gameCommand + "'");
 		} else if (cl.hasOption(NORMAL_AI)) {
+			sendCommand("READY");
 			try (Scanner sc = new Scanner(System.in);) {
 				while (true) {
 					while (!sc.nextLine().startsWith("EOD")) {
+						writeLog("Received 'EOD'");
+						break;
 					}
-					System.out.println("DUMMY");
+					sendCommand("DUMMY");
 				}
 			}
 		} else if (cl.hasOption(TIME_OUT_AI)) {
+			System.out.println("READY");
 			try (Scanner sc = new Scanner(System.in);) {
 				while (true) {
 					while (!sc.nextLine().startsWith("EOD")) {
+						writeLog("Received 'EOD'");
+						break;
 					}
-					System.out.println("DUMMY");
+					sendCommand("DUMMY");
 				}
 			}
 		} else if (cl.hasOption(PAUSE_COMMAND)) {
-			Files.append("pause\n", logFile, Charset.defaultCharset());
+			writeLog("Paused");
 		} else if (cl.hasOption(UNPAUSE_COMMAND)) {
-			Files.append("unpause\n", logFile, Charset.defaultCharset());
+			writeLog("Unpaused");
 		} else {
 			return false;
 		}
 		return true;
+	}
+
+	private static void sendCommand(String command) {
+		writeLog("Sending '" + command + "'");
+		System.out.println(command);
+		writeLog("Sent '" + command + "'");
+	}
+
+	private static void writeLog(String content) {
+		try {
+			Files.append(content + "\r\n", logFile, Charset.defaultCharset());
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 }
