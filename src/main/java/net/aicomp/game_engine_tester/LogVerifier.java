@@ -4,13 +4,13 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.Scanner;
 
-public class Verifier {
+public class LogVerifier {
 
 	private String lastActualLine;
 	private String lastExpectedLine;
 	private int lineNumber;
 
-	public Verifier() {
+	public LogVerifier() {
 	}
 
 	public boolean verify(File file, int aiCount) {

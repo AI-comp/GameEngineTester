@@ -86,14 +86,22 @@ public class Main {
 			try {
 				process.waitFor();
 				System.out.println("Finished '" + gameCommand + "'");
-				Verifier verifier = new Verifier();
 				Thread.sleep(1000);
-				if (verifier.verify(logFile, aiCount)) {
-					System.out.println("SUCCEEDED!");
+				LogVerifier logVerifier = new LogVerifier();
+				if (logVerifier.verify(logFile, aiCount)) {
+					System.out.println("VERIFIED LOG!");
 				} else {
-					System.out.println("NOT MATCHED (" + verifier.getLineNumber() + " line)!");
-					System.out.println("  Actual: " + verifier.getLastActualLine());
-					System.out.println("  Expected: " + verifier.getLastExpectedLine());
+					System.out.println("NOT VERIFIED LOG (" + logVerifier.getLineNumber() + " line)!");
+					System.out.println("  Actual: " + logVerifier.getLastActualLine());
+					System.out.println("  Expected: " + logVerifier.getLastExpectedLine());
+				}
+				JsonVerifier jsonVerifier = new JsonVerifier();
+				if (jsonVerifier.verify(stdoutFile, aiCount)) {
+					System.out.println("VERIFIED JSON!");
+				} else {
+					System.out.println("NOT VERIFIED JSON (" + jsonVerifier.getLastKey() + ")!");
+					System.out.println("  Actual: " + jsonVerifier.getLastActualValue());
+					System.out.println("  Expected: " + jsonVerifier.getLastExpectedValue());
 				}
 			} catch (InterruptedException e) {
 				e.printStackTrace();

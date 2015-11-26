@@ -32,7 +32,7 @@ public class VerifierTest {
 
 	@Test
 	public void testVerifier() {
-		Verifier verifier = new Verifier();
+		LogVerifier verifier = new LogVerifier();
 		StringBuilder builder = new StringBuilder();
 		int aiCount = 3;
 		builder.append("Starting\n");
