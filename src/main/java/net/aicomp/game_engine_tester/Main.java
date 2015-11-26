@@ -23,7 +23,7 @@ public class Main {
 	private static final String TIME_OUT_AI = "t";
 	private static final String PAUSE_COMMAND = "p";
 	private static final String UNPAUSE_COMMAND = "u";
-	private static final String LOG_FILE_NAME = "log.txt";
+	private static final String LOG_FILE_NAME = "game_engine_tester_log.txt";
 	private static final String JAR_FILE_NAME = "GameEngineTester.jar";
 	private static File logFile;
 
@@ -69,28 +69,38 @@ public class Main {
 			}
 			writeLog("Starting '" + gameCommand + "'");
 			ProcessBuilder pb = new ProcessBuilder(commandAndArgs);
-			pb.start();
+			Process process = pb.start();
 			writeLog("Started '" + gameCommand + "'");
+			try {
+				process.waitFor();
+				Verifier verifier = new Verifier();
+				Thread.sleep(5 * 1000);
+				if (verifier.verify(logFile, aiCount)) {
+					System.out.println("SUCCEEDED.");
+				} else {
+					System.out.println("NOT MATCHED (" + verifier.getLineNumber() + " line).");
+					System.out.println("  Actual: " + verifier.getLastActualLine());
+					System.out.println("  Expected: " + verifier.getLastExpectedLine());
+				}
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
 		} else if (cl.hasOption(NORMAL_AI)) {
 			sendCommand("READY");
 			try (Scanner sc = new Scanner(System.in);) {
-				while (true) {
-					while (!sc.nextLine().startsWith("EOD")) {
-						writeLog("Received 'EOD'");
-						break;
-					}
-					sendCommand("DUMMY");
+				while (!sc.nextLine().startsWith("EOD")) {
 				}
+				writeLog("Received 'EOD'");
+				sendCommand("DUMMY");
 			}
 		} else if (cl.hasOption(TIME_OUT_AI)) {
-			System.out.println("READY");
+			sendCommand("READY");
 			try (Scanner sc = new Scanner(System.in);) {
+				while (!sc.nextLine().startsWith("EOD")) {
+				}
+				writeLog("Received 'EOD'");
+				// Loop infinitely
 				while (true) {
-					while (!sc.nextLine().startsWith("EOD")) {
-						writeLog("Received 'EOD'");
-						break;
-					}
-					sendCommand("DUMMY");
 				}
 			}
 		} else if (cl.hasOption(PAUSE_COMMAND)) {
