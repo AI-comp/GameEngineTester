@@ -1,6 +1,6 @@
 package net.aicomp.game_engine_tester;
 
-import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.equalTo;
 import static org.junit.Assert.assertThat;
 
 import java.io.BufferedOutputStream;
@@ -37,21 +37,29 @@ public class VerifierTest {
 		int aiCount = 3;
 		builder.append("Starting\n");
 		builder.append("Started\n");
-		for (int i = 0; i < aiCount; i++) {
+		for (int i = 1; i < aiCount; i++) {
 			builder.append("Sending 'READY'\n");
-			builder.append("Sent 'READY'\n");
 		}
+		for (int i = 1; i < aiCount; i++) {
+			builder.append("Paused\n");
+		}
+		builder.append("Unpaused\n");
 		builder.append("Received 'EOD'\n");
 		for (int j = 0; j < 10; j++) {
-			for (int i = 0; i < aiCount - 1; i++) {
+			for (int i = 2; i < aiCount; i++) {
+				builder.append("Unpaused\n");
 				builder.append("Received 'EOD'\n");
 				builder.append("Sending 'DUMMY'\n");
-				builder.append("Sent 'DUMMY'\n");
+				builder.append("Paused\n");
 			}
 		}
 
 		try (Scanner sc = new Scanner(new StringReader(builder.toString()))) {
-			assertThat(verifier.verify(sc, aiCount), is(true));
+			boolean ret = verifier.verify(sc, aiCount);
+			assertThat(verifier.getLineNumber(), equalTo(48));
+			assertThat(verifier.getLastActualLine(), equalTo("Paused"));
+			assertThat(verifier.getLastExpectedLine(), equalTo("Paused"));
+			assertThat(ret, equalTo(true));
 		}
 	}
 }

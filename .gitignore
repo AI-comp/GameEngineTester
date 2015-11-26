@@ -58,4 +58,4 @@ download
 log/
 *.csv
 *.jar
-log.txt
+*log.txt

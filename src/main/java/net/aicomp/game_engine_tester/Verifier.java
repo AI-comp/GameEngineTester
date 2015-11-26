@@ -28,21 +28,27 @@ public class Verifier {
 				return false;
 			if (!checkStartsWith(sc, "Started"))
 				return false;
-			for (int i = 0; i < aiCount; i++) {
+			for (int i = 1; i < aiCount; i++) {
 				if (!checkStartsWith(sc, "Sending 'READY'"))
 					return false;
-				if (!checkStartsWith(sc, "Sent 'READY'"))
+			}
+			for (int i = 1; i < aiCount; i++) {
+				if (!checkStartsWith(sc, "Paused"))
 					return false;
 			}
+			if (!checkStartsWith(sc, "Unpaused"))
+				return false;
 			if (!checkStartsWith(sc, "Received 'EOD'"))
 				return false;
 			while (sc.hasNextLine()) {
-				for (int i = 0; i < aiCount - 1; i++) {
+				for (int i = 2; i < aiCount; i++) {
+					if (!checkStartsWith(sc, "Unpaused"))
+						return false;
 					if (!checkStartsWith(sc, "Received 'EOD'"))
 						return false;
 					if (!checkStartsWith(sc, "Sending 'DUMMY'"))
 						return false;
-					if (!checkStartsWith(sc, "Sent 'DUMMY'"))
+					if (!checkStartsWith(sc, "Paused"))
 						return false;
 				}
 			}
