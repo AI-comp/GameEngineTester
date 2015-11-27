@@ -42,15 +42,18 @@ public class JsonVerifier {
 		if (!checkValue(gameResult, "winner", -1)) {
 			return false;
 		}
-		if (!checkType(gameResult, "replay", String.class)) {
+		if (!checkType(gameResult, "replay", ArrayList.class) && !checkType(gameResult, "replay", Map.class)) {
 			return false;
 		}
-		Map<String, Object> log = ((ArrayList<Map<String, Object>>)gameResult.get("log")).get(0);
-		if (!checkType(log, "target", Integer.class)) {
-			return false;
-		}
-		if (!checkType(log, "message", String.class)) {
-			return false;
+		ArrayList<Map<String, Object>> list = (ArrayList<Map<String, Object>>) gameResult.get("log");
+		if (list.size() > 0) {
+			Map<String, Object> log = list.get(0);
+			if (!checkType(log, "target", Integer.class)) {
+				return false;
+			}
+			if (!checkType(log, "message", String.class)) {
+				return false;
+			}
 		}
 		return true;
 	}
