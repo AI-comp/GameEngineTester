@@ -21,6 +21,7 @@ public class JsonVerifier {
 	public boolean verify(File file, int aiCount) {
 		ObjectMapper mapper = new ObjectMapper();
 		try {
+			@SuppressWarnings("unchecked")
 			Map<String, Object> gameResult = mapper.readValue(file, Map.class);
 			return verify(gameResult);
 		} catch (JsonParseException e) {
