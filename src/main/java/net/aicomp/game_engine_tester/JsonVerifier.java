@@ -39,7 +39,11 @@ public class JsonVerifier {
 		if (!checkType(gameResult, "log", ArrayList.class)) {
 			return false;
 		}
-		if (!checkValue(gameResult, "winner", -1)) {
+		if (checkType(gameResult, "winner", String.class)) {
+			if (!checkValue(gameResult, "winner", "")) {
+				return false;
+			}
+		} else if (!checkType(gameResult, "winner", Integer.class)) {
 			return false;
 		}
 		if (!checkType(gameResult, "replay", ArrayList.class) && !checkType(gameResult, "replay", Map.class)) {

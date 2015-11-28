@@ -138,21 +138,14 @@ public class Main {
 					}
 				}
 			}
-		} else if (cl.hasOption(PAUSE_COMMAND))
-
-		{
+		} else if (cl.hasOption(PAUSE_COMMAND)) {
 			writeLog("Paused");
-		} else if (cl.hasOption(UNPAUSE_COMMAND))
-
-		{
+		} else if (cl.hasOption(UNPAUSE_COMMAND)) {
 			writeLog("Unpaused");
-		} else
-
-		{
+		} else {
 			return false;
 		}
 		return true;
-
 	}
 
 	private static void sendCommand(String command) {
